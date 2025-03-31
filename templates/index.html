@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Review Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Fake Product Review Detection</h2>
+    <form id="reviewForm">
+        <label for="app_id">Enter Google Play App ID:</label>
+        <input type="text" id="app_id" name="app_id" required>
+        <button type="submit">Analyze</button>
+    </form>
+    
+    <h3>Results:</h3>
+    <p id="result"></p>
+    
+    <script>
+        document.getElementById("reviewForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let app_id = document.getElementById("app_id").value;
+            fetch("/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "app_id=" + encodeURIComponent(app_id)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML =
+                    `Total Reviews: ${data.total_reviews} <br>
+                    Fake Reviews: ${data.fake_reviews} (${data.fake_percentage.toFixed(2)}%)<br>
+                    Genuine Reviews: ${data.genuine_percentage.toFixed(2)}% <br>
+                    Model Accuracy: ${data.accuracy.toFixed(2)}% <br>
+                    Summary: ${data.summary} <br>
+                    Recommendation: <b>${data.recommendation}</b>`;
+            });
+        });
+    </script>
+</body>
+</html>
